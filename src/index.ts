@@ -1,7 +1,10 @@
 import path from "path";
+
 import { ZodError } from "zod";
-import { validateEnvVars } from "./validate-env-vars";
 import dotenvFlow from "dotenv-flow";
+
+import { validateEnvVars } from "./validate-env-vars";
+import { logger, moderation } from "./services";
 
 dotenvFlow.config({
   path: path.resolve(process.cwd()),
@@ -16,4 +19,13 @@ try {
   }
 }
 
-console.log("Hello World!");
+const userPrompt = "Co jest stolicą Polski?";
+
+const run = async () => {
+  // 1. Moderation
+  const moderationResult = await moderation(userPrompt);
+
+  logger.info({ moderationResult });
+};
+
+run();
