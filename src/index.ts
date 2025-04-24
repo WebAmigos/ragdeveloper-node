@@ -3,6 +3,11 @@ import path from "path";
 import { z, ZodError } from "zod";
 import dotenvFlow from "dotenv-flow";
 import { ChatOpenAI } from "@langchain/openai";
+import {
+  JsonOutputParser,
+  StringOutputParser,
+} from "@langchain/core/output_parsers";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
 
 import { validateEnvVars } from "./validate-env-vars";
 import { logger, moderation } from "./services";
@@ -19,6 +24,15 @@ try {
     process.exit(1);
   }
 }
+
+type Person = {
+  name: string;
+  height_in_meters: number;
+};
+
+type People = {
+  people: Person[];
+};
 
 const userPrompt = "Co jest stolicą Polski?";
 
@@ -58,6 +72,45 @@ const run = async () => {
   const result = await model.invoke(userPrompt);
 
   logger.info(`Response: ${result.content}`);
+
+  const formatInstructions = `Respond only in valid JSON. The JSON object you return should match the following schema:
+{{ people: [{{ name: "string", height_in_meters: "number" }}] }}
+
+Where people is an array of objects, each with a name and height_in_meters field.
+`;
+
+  const parser = new JsonOutputParser<People>();
+
+  const prompt = await ChatPromptTemplate.fromMessages([
+    [
+      "system",
+      "Answer the user query. Wrap the output in `json` tags\n{format_instructions}",
+    ],
+    ["human", "{query}"],
+  ]).partial({
+    format_instructions: formatInstructions,
+  });
+
+  // const query = "Anna is 23 years old and she is 6 feet tall";
+  // const query = userPrompt;
+
+  const query = "Anna is 23 years old and she is 6 feet tall";
+
+  logger.info(await prompt.format({ query }));
+
+  // const chain = prompt.pipe(model);
+  const chain = prompt.pipe(model).pipe(parser);
+
+  const chainResult = await chain.invoke({ query });
+  logger.info(chainResult);
+
+  const jokePrompt = ChatPromptTemplate.fromTemplate(
+    "opowiedz mi żart o {topic}"
+  );
+
+  const jokeChain = jokePrompt.pipe(model).pipe(new StringOutputParser());
+  const jokeResult = await jokeChain.invoke({ topic: "Polakach" });
+  logger.info({ jokeResult });
 };
 
 run();
