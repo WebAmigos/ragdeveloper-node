@@ -20,6 +20,12 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@langchain/community": "^0.3.41",
+    "@langchain/core": "^0.3.48",
+    "@langchain/langgraph": "^0.2.67",
+    "@langchain/openai": "^0.5.7",
+    "langchain": "^0.3.24",
+    "langsmith": "^0.3.21",
     "openai": "^4.96.0",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
