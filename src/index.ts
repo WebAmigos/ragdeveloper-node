@@ -25,6 +25,11 @@ const run = async () => {
   // 1. Moderation
   const moderationResult = await moderation(userPrompt);
 
+  if (moderationResult.results[0].flagged) {
+    logger.error("Moderation fail!");
+    process.exit(1);
+  }
+
   logger.info({ moderationResult });
 };
 
