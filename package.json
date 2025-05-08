@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch ./src/index.ts",
+    "embed": "tsx watch ./src/embed.ts",
     "build": "tsc",
     "prestart": "npm run build",
     "start": "node ./dist/index.js",
@@ -24,8 +25,10 @@
     "@langchain/core": "^0.3.48",
     "@langchain/langgraph": "^0.2.67",
     "@langchain/openai": "^0.5.7",
+    "@qdrant/js-client-rest": "^1.14.0",
     "langchain": "^0.3.24",
     "langsmith": "^0.3.21",
+    "nanoid": "^5.1.5",
     "openai": "^4.96.0",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",

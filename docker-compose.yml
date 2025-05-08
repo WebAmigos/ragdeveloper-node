@@ -1,0 +1,35 @@
+version: "3"
+
+# vector store (Qdrant, Postgres + pgvector, Chroma)
+# relational db (Postgres, MySQL)
+# nosql (MongoDB)
+# key-value (Redis)
+services:
+  postgres:
+    image: postgres
+    container_name: ragdev-postgres
+    ports:
+      - 5432:5432
+    restart: always
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: ragdev
+
+  qdrant:
+    image: qdrant/qdrant
+    container_name: ragdev-qdrant
+    ports:
+      - 6333:6333
+    restart: always
+    volumes:
+      - ./volumes/qdrant:/qdrant/storage
+
+  redis:
+    image: redis
+    container_name: ragdev-redis
+    ports:
+      - 6379:6379
+    restart: always
